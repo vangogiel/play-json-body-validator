@@ -1,7 +1,8 @@
 package play.api.mvc
 
 import cats.syntax.either._
-import play.api.libs.json.JsValue
+import play.api.libs.json.{ JsValue, Json }
+import play.api.mvc.Errors.{ BodyIsEmpty, GeneralError }
 
 import scala.concurrent.ExecutionContext
 
@@ -11,11 +12,11 @@ abstract class RequestBodyParser(parse: PlayBodyParsers)(implicit val ec: Execut
       parse.tolerantJson
         .apply(header)
         .map(either => {
-          val result: Either[String, JsValue] = either match {
+          val result: Either[GeneralError, JsValue] = either match {
             case Right(json) => Right(json)
-            case _           => Left("error")
+            case Left(_)     => Left(BodyIsEmpty)
           }
-          result.leftMap(errorMessage => BadRequest(errorMessage))
+          result.leftMap(error => BadRequest(Json.toJson[GeneralError](error)))
         })
     )
   }

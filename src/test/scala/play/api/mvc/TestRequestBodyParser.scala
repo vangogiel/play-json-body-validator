@@ -6,7 +6,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatestplus.play.PlaySpec
 import play.api.http.Status.BAD_REQUEST
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{ contentAsString, defaultAwaitTimeout, status, stubPlayBodyParsers }
+import play.api.test.Helpers.{ contentAsJson, defaultAwaitTimeout, status, stubPlayBodyParsers }
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -42,8 +42,9 @@ class TestRequestBodyParser extends PlaySpec with Eventually {
         status(outcome) mustBe BAD_REQUEST
       }
 
-      "return an error message with body is empty error" in {
-        contentAsString(outcome) mustBe "error"
+      "return an error stating that the body is empty" in {
+        (contentAsJson(outcome) \ "errorName").as[String] mustBe "bodyIsEmpty"
+        (contentAsJson(outcome) \ "message").as[String] mustBe "You must provide body in your request"
       }
     }
   }
