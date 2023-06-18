@@ -21,7 +21,8 @@ libraryDependencies ++= Seq(
   "org.typelevel" %% "cats-effect" % "2.3.0",
   "org.julienrf" %% "play-json-derived-codecs" % "7.0.0",
   "net.logstash.logback" % "logstash-logback-encoder" % "6.4",
-  "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % "test"
+  "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % "test",
+  "io.circe" %% "circe-parser" % "0.14.1" % "test"
 )
 
 commands ++= Seq(ciBuild, devBuild)
