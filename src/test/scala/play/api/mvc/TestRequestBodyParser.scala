@@ -76,6 +76,23 @@ class TestRequestBodyParser extends PlaySpec with Eventually {
         (contentAsJson(outcome) \ "message").as[String] mustBe "The message body does not match JSON schema"
       }
     }
+
+    "the body is not Json and the request" should {
+      val outcome = bodyParser
+        .parseRequest[TestRequest]()
+        .apply(FakeRequest().withBody("not json"))
+        .run()
+        .map(_.left.getOrElse(Results.ImATeapot))
+
+      "return BadRequest in the response" in {
+        status(outcome) mustBe BAD_REQUEST
+      }
+
+      "return an error stating that the body is not Json" in {
+        (contentAsJson(outcome) \ "errorName").as[String] mustBe "bodyIsNotJson"
+        (contentAsJson(outcome) \ "message").as[String] mustBe "You must provide valid json content with your request"
+      }
+    }
   }
 
   private val mockJson: String =

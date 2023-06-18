@@ -1,27 +1,38 @@
 package play.api.mvc
 
 import cats.syntax.either._
-import play.api.libs.json.{ Json, Reads }
-import play.api.mvc.Errors.{ BodyDoesNotMatchSchema, BodyIsEmpty, GeneralError }
+import play.api.libs.json.{ JsValue, Json, Reads }
+import play.api.mvc.Errors.{ BodyDoesNotMatchSchema, BodyIsEmpty, BodyIsNotJson, GeneralError }
 
 import scala.concurrent.ExecutionContext
 
-abstract class RequestBodyParser(parse: PlayBodyParsers)(implicit val ec: ExecutionContext) extends Results {
+abstract class RequestBodyParser(parser: PlayBodyParsers)(implicit val ec: ExecutionContext) extends Results {
   def parseRequest[A]()(implicit reads: Reads[A]): BodyParser[A] = {
+    createBodyParser(
+      parser,
+      either => {
+        val result: Either[GeneralError, A] = either match {
+          case Right(json) =>
+            json
+              .validate[A]
+              .asEither
+              .leftMap[GeneralError](_ => BodyDoesNotMatchSchema)
+          case Left(false) => Left(BodyIsEmpty)
+          case Left(true)  => Left(BodyIsNotJson)
+        }
+        result.leftMap(error => BadRequest(Json.toJson[GeneralError](error)))
+      }
+    )
+  }
+
+  private def createBodyParser[A](
+      parser: PlayBodyParsers,
+      f: Either[Boolean, JsValue] => Either[Result, A]
+  ): BodyParser[A] = {
     BodyParser(header =>
-      parse.tolerantJson
+      parser.tolerantJson
         .apply(header)
-        .map(either => {
-          val result: Either[GeneralError, A] = either match {
-            case Right(json) =>
-              json
-                .validate[A]
-                .asEither
-                .leftMap[GeneralError](_ => BodyDoesNotMatchSchema)
-            case Left(_) => Left(BodyIsEmpty)
-          }
-          result.leftMap(error => BadRequest(Json.toJson[GeneralError](error)))
-        })
+        .map(either => f(either.leftMap(_ => header.hasBody)))
     )
   }
 }
