@@ -13,6 +13,10 @@ object Errors {
     val message: String = "You must provide body in your request"
   }
 
+  case object BodyIsNotJson extends GeneralError {
+    val message: String = "You must provide valid json content with your request"
+  }
+
   case object BodyDoesNotMatchSchema extends GeneralError {
     val message: String = "The message body does not match JSON schema"
   }
