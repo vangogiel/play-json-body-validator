@@ -6,7 +6,7 @@ import play.api.mvc.Errors.{ BodyDoesNotMatchSchema, BodyIsEmpty, BodyIsNotJson,
 
 import scala.concurrent.ExecutionContext
 
-abstract class RequestBodyParser(parser: PlayBodyParsers)(implicit val ec: ExecutionContext) extends Results {
+class RequestBodyParser(parser: PlayBodyParsers)(implicit val ec: ExecutionContext) extends Results {
   def parseRequest[A]()(implicit reads: Reads[A]): BodyParser[A] = {
     createBodyParser(
       parser,
@@ -16,7 +16,7 @@ abstract class RequestBodyParser(parser: PlayBodyParsers)(implicit val ec: Execu
             json
               .validate[A]
               .asEither
-              .leftMap[GeneralError](_ => BodyDoesNotMatchSchema)
+              .leftMap[GeneralError](errors => BodyDoesNotMatchSchema.fromJsErrors(errors))
           case Left(false) => Left(BodyIsEmpty)
           case Left(true)  => Left(BodyIsNotJson)
         }
