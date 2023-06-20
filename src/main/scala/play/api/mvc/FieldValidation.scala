@@ -3,7 +3,7 @@ package play.api.mvc
 import julienrf.json.derived
 import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils
 import play.api.libs.json.{ JsPath, JsString, JsonValidationError, Writes, __ }
-import play.api.mvc.PlayJsonValidationErrors.{ FieldEmpty, PathMissing }
+import play.api.mvc.PlayJsonValidationErrors.{ FieldEmpty, MultipleResults, PathMissing }
 
 object FieldValidation {
   sealed trait FieldValidationError {
@@ -23,6 +23,10 @@ object FieldValidation {
     val message = "Field cannot be empty"
   }
 
+  case class MultipleResultsForField(field: JsonPath) extends FieldValidationError {
+    val message = "Multiple results for the given path"
+  }
+
   object FieldValidationError {
     implicit val writes: Writes[FieldValidationError] = error =>
       derived.flat
@@ -33,9 +37,10 @@ object FieldValidation {
     def convertFromJsonValidationError(jsPath: JsPath, error: JsonValidationError): FieldValidationError = {
       val path = JsonPath(jsPath)
       error.message match {
-        case PathMissing => FieldIsMissing(path)
-        case FieldEmpty  => FieldIsEmpty(path)
-        case _           => FieldHasInvalidValue(path)
+        case PathMissing     => FieldIsMissing(path)
+        case FieldEmpty      => FieldIsEmpty(path)
+        case MultipleResults => MultipleResultsForField(path)
+        case _               => FieldHasInvalidValue(path)
       }
     }
   }

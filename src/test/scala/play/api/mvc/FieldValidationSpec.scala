@@ -2,7 +2,13 @@ package play.api.mvc
 
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{ JsPath, Json, JsonValidationError, __ }
-import play.api.mvc.FieldValidation.{ FieldHasInvalidValue, FieldIsEmpty, FieldIsMissing, FieldValidationError }
+import play.api.mvc.FieldValidation.{
+  FieldHasInvalidValue,
+  FieldIsEmpty,
+  FieldIsMissing,
+  FieldValidationError,
+  MultipleResultsForField
+}
 
 class FieldValidationSpec extends PlaySpec {
 
@@ -57,6 +63,23 @@ class FieldValidationSpec extends PlaySpec {
     }
   }
 
+  "A 'multiple results for field' validation" should {
+    val validation = MultipleResultsForField(JsonPath(JsPath()))
+    val validationJson = Json.toJson[FieldValidationError](validation)
+
+    "contain the right error code" in {
+      (validationJson \ "errorName").as[String] mustBe "multipleResultsForField"
+    }
+
+    "contain the right message" in {
+      (validationJson \ "message").as[String] mustBe "Multiple results for the given path"
+    }
+
+    "have concerned field defined" in {
+      (validationJson \ "field").isDefined
+    }
+  }
+
   "A field validation error" when {
     "receives Play Json validation error" should {
       "correctly match 'path is missing' error" in {
@@ -78,6 +101,13 @@ class FieldValidationSpec extends PlaySpec {
         val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
 
         validationError mustBe a[FieldIsEmpty]
+      }
+
+      "correctly match 'multiple results for field' error" in {
+        val error = JsonValidationError(PlayJsonValidationErrors.MultipleResults)
+        val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
+
+        validationError mustBe a[MultipleResultsForField]
       }
     }
   }
