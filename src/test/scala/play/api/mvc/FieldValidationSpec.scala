@@ -1,8 +1,8 @@
 package play.api.mvc
 
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{ Json, __ }
-import play.api.mvc.FieldValidation.{ FieldIsMissing, FieldValidationError }
+import play.api.libs.json.{ JsPath, Json, JsonValidationError, __ }
+import play.api.mvc.FieldValidation.{ FieldHasInvalidValue, FieldIsMissing, FieldValidationError }
 
 class FieldValidationSpec extends PlaySpec {
 
@@ -20,6 +20,41 @@ class FieldValidationSpec extends PlaySpec {
 
     "have concerned field defined" in {
       (validationJson \ "field").isDefined
+    }
+  }
+
+  "A 'field has invalid value' validation" should {
+    val validation = FieldHasInvalidValue(JsonPath(JsPath()))
+    val validationJson = Json.toJson[FieldValidationError](validation)
+
+    "contain the right error code" in {
+      (validationJson \ "errorName").as[String] mustBe "fieldHasInvalidValue"
+    }
+
+    "contain the right message" in {
+      (validationJson \ "message").as[String] mustBe "Field has invalid value"
+    }
+
+    "have concerned field defined" in {
+      (validationJson \ "field").isDefined
+    }
+  }
+
+  "A field validation error" when {
+    "receives Play Json validation error" should {
+      "correctly match 'path is missing' error" in {
+        val error = JsonValidationError(PlayJsonValidationErrors.PathMissing)
+        val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
+
+        validationError mustBe a[FieldIsMissing]
+      }
+
+      "correctly match 'field has invalid value' error" in {
+        val error = JsonValidationError(PlayJsonValidationErrors.FieldHasInvalidValue)
+        val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
+
+        validationError mustBe a[FieldHasInvalidValue]
+      }
     }
   }
 }

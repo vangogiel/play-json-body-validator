@@ -3,6 +3,7 @@ package play.api.mvc
 import julienrf.json.derived
 import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils
 import play.api.libs.json.{ JsPath, JsString, JsonValidationError, Writes, __ }
+import play.api.mvc.PlayJsonValidationErrors.PathMissing
 
 object FieldValidation {
   sealed trait FieldValidationError {
@@ -12,6 +13,10 @@ object FieldValidation {
 
   case class FieldIsMissing(field: JsonPath) extends FieldValidationError {
     val message = "Field is mandatory"
+  }
+
+  case class FieldHasInvalidValue(field: JsonPath) extends FieldValidationError {
+    val message = "Field has invalid value"
   }
 
   object FieldValidationError {
@@ -24,7 +29,8 @@ object FieldValidation {
     def convertFromJsonValidationError(jsPath: JsPath, error: JsonValidationError): FieldValidationError = {
       val path = JsonPath(jsPath)
       error.message match {
-        case _ => FieldIsMissing(path)
+        case PathMissing => FieldIsMissing(path)
+        case _           => FieldHasInvalidValue(path)
       }
     }
   }
