@@ -2,7 +2,10 @@ package play.api.mvc
 
 import julienrf.json.derived
 import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils
-import play.api.libs.json.{ JsString, OWrites, __ }
+import play.api.libs.json.{ JsPath, JsString, JsonValidationError, OWrites, __ }
+import play.api.mvc.FieldValidation.FieldValidationError
+
+import scala.collection.Seq
 
 object Errors {
   sealed trait GeneralError {
@@ -17,7 +20,7 @@ object Errors {
     val message: String = "You must provide valid json content with your request"
   }
 
-  case object BodyDoesNotMatchSchema extends GeneralError {
+  case class BodyDoesNotMatchSchema(errors: Seq[FieldValidationError]) extends GeneralError {
     val message: String = "The message body does not match JSON schema"
   }
 
@@ -27,5 +30,15 @@ object Errors {
         .owrites[GeneralError]((__ \ "errorName").write[String].contramap[String](StringUtils.uncapitalize))
         .writes(error)
         .+(("message", JsString(error.message)))
+  }
+
+  object BodyDoesNotMatchSchema {
+    def fromJsErrors(errors: Seq[(JsPath, Seq[JsonValidationError])]): BodyDoesNotMatchSchema = {
+      BodyDoesNotMatchSchema(errors = for {
+        pathAndValidationError <- errors
+        (jsPath, jsonValidationErrors) = pathAndValidationError
+        validationError <- jsonValidationErrors
+      } yield FieldValidationError.convertFromJsonValidationError(jsPath, validationError))
+    }
   }
 }

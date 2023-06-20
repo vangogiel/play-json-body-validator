@@ -16,7 +16,7 @@ abstract class RequestBodyParser(parser: PlayBodyParsers)(implicit val ec: Execu
             json
               .validate[A]
               .asEither
-              .leftMap[GeneralError](_ => BodyDoesNotMatchSchema)
+              .leftMap[GeneralError](errors => BodyDoesNotMatchSchema.fromJsErrors(errors))
           case Left(false) => Left(BodyIsEmpty)
           case Left(true)  => Left(BodyIsNotJson)
         }
