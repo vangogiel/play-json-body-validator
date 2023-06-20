@@ -28,7 +28,7 @@ object TestRequest {
 class TestRequestBodyParser extends PlaySpec with Eventually {
   implicit val actorSystem: ActorSystem = ActorSystem()
 
-  val bodyParser = new TestBodyParser(stubPlayBodyParsers)
+  val bodyParser = new RequestBodyParser(stubPlayBodyParsers)
 
   "Parsing a request body" when {
     "the body is valid and the request" should {
