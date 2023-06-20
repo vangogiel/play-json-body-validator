@@ -2,7 +2,7 @@ package play.api.mvc
 
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{ JsPath, Json, JsonValidationError, __ }
-import play.api.mvc.FieldValidation.{ FieldHasInvalidValue, FieldIsMissing, FieldValidationError }
+import play.api.mvc.FieldValidation.{ FieldHasInvalidValue, FieldIsEmpty, FieldIsMissing, FieldValidationError }
 
 class FieldValidationSpec extends PlaySpec {
 
@@ -40,6 +40,23 @@ class FieldValidationSpec extends PlaySpec {
     }
   }
 
+  "A 'field is empty' validation" should {
+    val validation = FieldIsEmpty(JsonPath(JsPath()))
+    val validationJson = Json.toJson[FieldValidationError](validation)
+
+    "contain the right error code" in {
+      (validationJson \ "errorName").as[String] mustBe "fieldIsEmpty"
+    }
+
+    "contain the right message" in {
+      (validationJson \ "message").as[String] mustBe "Field cannot be empty"
+    }
+
+    "have concerned field defined" in {
+      (validationJson \ "field").isDefined
+    }
+  }
+
   "A field validation error" when {
     "receives Play Json validation error" should {
       "correctly match 'path is missing' error" in {
@@ -54,6 +71,13 @@ class FieldValidationSpec extends PlaySpec {
         val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
 
         validationError mustBe a[FieldHasInvalidValue]
+      }
+
+      "correctly match 'field is empty' error" in {
+        val error = JsonValidationError(PlayJsonValidationErrors.FieldEmpty)
+        val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
+
+        validationError mustBe a[FieldIsEmpty]
       }
     }
   }
