@@ -10,10 +10,12 @@ import play.api.mvc.FieldValidation.{
   FieldMustBeBigDecimal,
   FieldMustBeBigInteger,
   FieldMustBeByte,
+  FieldMustBeEnumString,
   FieldMustBeInteger,
   FieldMustBeLong,
   FieldMustBeNumber,
   FieldMustBeShort,
+  FieldMustBeValidEnumValue,
   FieldValidationError,
   MultipleResultsForField
 }
@@ -224,6 +226,40 @@ class FieldValidationSpec extends PlaySpec {
     }
   }
 
+  "A 'field must be a valid enum value' validation" should {
+    val validation = FieldMustBeValidEnumValue(JsonPath(JsPath()))
+    val validationJson = Json.toJson[FieldValidationError](validation)
+
+    "contain the right error code" in {
+      (validationJson \ "errorName").as[String] mustBe "fieldMustBeValidEnumValue"
+    }
+
+    "contain the right message" in {
+      (validationJson \ "message").as[String] mustBe "Field must be a valid enum value"
+    }
+
+    "have concerned field defined" in {
+      (validationJson \ "field").isDefined
+    }
+  }
+
+  "A 'field must be an enum string' validation" should {
+    val validation = FieldMustBeEnumString(JsonPath(JsPath()))
+    val validationJson = Json.toJson[FieldValidationError](validation)
+
+    "contain the right error code" in {
+      (validationJson \ "errorName").as[String] mustBe "fieldMustBeEnumString"
+    }
+
+    "contain the right message" in {
+      (validationJson \ "message").as[String] mustBe "Field must be an enum String"
+    }
+
+    "have concerned field defined" in {
+      (validationJson \ "field").isDefined
+    }
+  }
+
   "A field validation error" when {
     "receives Play Json validation error" should {
       "correctly match 'path is missing' error" in {
@@ -308,6 +344,20 @@ class FieldValidationSpec extends PlaySpec {
         val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
 
         validationError mustBe a[FieldMustBeBigInteger]
+      }
+
+      "correctly match 'field must be a valid enum value' error" in {
+        val error = JsonValidationError(PlayJsonValidationErrors.ExpectedValidEnumValues)
+        val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
+
+        validationError mustBe a[FieldMustBeValidEnumValue]
+      }
+
+      "correctly match 'field must be an enum string' error" in {
+        val error = JsonValidationError(PlayJsonValidationErrors.ExpectedEnumString)
+        val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
+
+        validationError mustBe a[FieldMustBeEnumString]
       }
     }
   }
