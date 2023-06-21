@@ -12,4 +12,5 @@ object PlayJsonValidationErrors {
   val ExpectedLong = "error.expected.long"
   val ExpectedNumber = "error.expected.jsnumber"
   val ExpectedBigDecimal = "error.expected.jsnumberorjsstring"
+  val ExpectedBigInteger = "error.invalid.biginteger"
 }
