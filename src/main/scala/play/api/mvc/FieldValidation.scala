@@ -5,6 +5,7 @@ import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils
 import play.api.libs.json.{ JsPath, JsString, JsonValidationError, Writes, __ }
 import play.api.mvc.PlayJsonValidationErrors.{
   ExpectedBigDecimal,
+  ExpectedBigInteger,
   ExpectedByte,
   ExpectedInt,
   ExpectedJsArray,
@@ -66,6 +67,10 @@ object FieldValidation {
     val message = "Field must be a BigDecimal type"
   }
 
+  case class FieldMustBeBigInteger(field: JsonPath) extends FieldValidationError {
+    val message = "Field must be a BigInteger type"
+  }
+
   object FieldValidationError {
     implicit val writes: Writes[FieldValidationError] = error =>
       derived.flat
@@ -86,6 +91,7 @@ object FieldValidation {
         case ExpectedLong       => FieldMustBeLong(path)
         case ExpectedNumber     => FieldMustBeNumber(path)
         case ExpectedBigDecimal => FieldMustBeBigDecimal(path)
+        case ExpectedBigInteger => FieldMustBeBigInteger(path)
         case _                  => FieldHasInvalidValue(path)
       }
     }
