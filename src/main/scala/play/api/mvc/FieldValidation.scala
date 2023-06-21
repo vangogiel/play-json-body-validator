@@ -4,6 +4,7 @@ import julienrf.json.derived
 import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils
 import play.api.libs.json.{ JsPath, JsString, JsonValidationError, Writes, __ }
 import play.api.mvc.PlayJsonValidationErrors.{
+  ExpectedBigDecimal,
   ExpectedByte,
   ExpectedInt,
   ExpectedJsArray,
@@ -61,6 +62,10 @@ object FieldValidation {
     val message = "Field must be a Double or a Float type"
   }
 
+  case class FieldMustBeBigDecimal(field: JsonPath) extends FieldValidationError {
+    val message = "Field must be a BigDecimal type"
+  }
+
   object FieldValidationError {
     implicit val writes: Writes[FieldValidationError] = error =>
       derived.flat
@@ -71,16 +76,17 @@ object FieldValidation {
     def convertFromJsonValidationError(jsPath: JsPath, error: JsonValidationError): FieldValidationError = {
       val path = JsonPath(jsPath)
       error.message match {
-        case PathMissing     => FieldIsMissing(path)
-        case FieldEmpty      => FieldIsEmpty(path)
-        case MultipleResults => MultipleResultsForField(path)
-        case ExpectedJsArray => FieldMustBeArray(path)
-        case ExpectedInt     => FieldMustBeInteger(path)
-        case ExpectedShort   => FieldMustBeShort(path)
-        case ExpectedByte    => FieldMustBeByte(path)
-        case ExpectedLong    => FieldMustBeLong(path)
-        case ExpectedNumber  => FieldMustBeNumber(path)
-        case _               => FieldHasInvalidValue(path)
+        case PathMissing        => FieldIsMissing(path)
+        case FieldEmpty         => FieldIsEmpty(path)
+        case MultipleResults    => MultipleResultsForField(path)
+        case ExpectedJsArray    => FieldMustBeArray(path)
+        case ExpectedInt        => FieldMustBeInteger(path)
+        case ExpectedShort      => FieldMustBeShort(path)
+        case ExpectedByte       => FieldMustBeByte(path)
+        case ExpectedLong       => FieldMustBeLong(path)
+        case ExpectedNumber     => FieldMustBeNumber(path)
+        case ExpectedBigDecimal => FieldMustBeBigDecimal(path)
+        case _                  => FieldHasInvalidValue(path)
       }
     }
   }
