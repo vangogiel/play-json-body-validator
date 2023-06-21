@@ -9,4 +9,5 @@ object PlayJsonValidationErrors {
   val ExpectedInt = "error.expected.int"
   val ExpectedShort = "error.expected.short"
   val ExpectedByte = "error.expected.byte"
+  val ExpectedLong = "error.expected.long"
 }
