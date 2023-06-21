@@ -8,6 +8,7 @@ import play.api.mvc.PlayJsonValidationErrors.{
   ExpectedInt,
   ExpectedJsArray,
   ExpectedLong,
+  ExpectedNumber,
   ExpectedShort,
   FieldEmpty,
   MultipleResults,
@@ -56,6 +57,10 @@ object FieldValidation {
     val message = "Field must be a long"
   }
 
+  case class FieldMustBeNumber(field: JsonPath) extends FieldValidationError {
+    val message = "Field must be a number"
+  }
+
   object FieldValidationError {
     implicit val writes: Writes[FieldValidationError] = error =>
       derived.flat
@@ -74,6 +79,7 @@ object FieldValidation {
         case ExpectedShort   => FieldMustBeShort(path)
         case ExpectedByte    => FieldMustBeByte(path)
         case ExpectedLong    => FieldMustBeLong(path)
+        case ExpectedNumber  => FieldMustBeNumber(path)
         case _               => FieldHasInvalidValue(path)
       }
     }
