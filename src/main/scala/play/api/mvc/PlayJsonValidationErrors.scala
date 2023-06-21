@@ -14,4 +14,5 @@ object PlayJsonValidationErrors {
   val ExpectedBigDecimal = "error.expected.jsnumberorjsstring"
   val ExpectedBigInteger = "error.invalid.biginteger"
   val ExpectedValidEnumValues = "error.expected.validenumvalue"
+  val ExpectedEnumString = "error.expected.enumstring"
 }

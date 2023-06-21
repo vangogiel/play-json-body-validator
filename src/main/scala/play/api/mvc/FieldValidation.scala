@@ -7,6 +7,7 @@ import play.api.mvc.PlayJsonValidationErrors.{
   ExpectedBigDecimal,
   ExpectedBigInteger,
   ExpectedByte,
+  ExpectedEnumString,
   ExpectedInt,
   ExpectedJsArray,
   ExpectedLong,
@@ -76,6 +77,10 @@ object FieldValidation {
     val message = "Field must be a valid enum value"
   }
 
+  case class FieldMustBeEnumString(field: JsonPath) extends FieldValidationError {
+    val message = "Field must be an enum String"
+  }
+
   object FieldValidationError {
     implicit val writes: Writes[FieldValidationError] = error =>
       derived.flat
@@ -98,6 +103,7 @@ object FieldValidation {
         case ExpectedBigDecimal      => FieldMustBeBigDecimal(path)
         case ExpectedBigInteger      => FieldMustBeBigInteger(path)
         case ExpectedValidEnumValues => FieldMustBeValidEnumValue(path)
+        case ExpectedEnumString      => FieldMustBeEnumString(path)
         case _                       => FieldHasInvalidValue(path)
       }
     }
