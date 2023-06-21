@@ -7,4 +7,5 @@ object PlayJsonValidationErrors {
   val MultipleResults = "error.path.result.multiple"
   val ExpectedJsArray = "error.expected.jsarray"
   val ExpectedInt = "error.expected.int"
+  val ExpectedShort = "error.expected.short"
 }
