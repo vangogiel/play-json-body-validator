@@ -112,7 +112,7 @@ class FieldValidationSpec extends PlaySpec {
     }
 
     "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be an integer"
+      (validationJson \ "message").as[String] mustBe "Field must be an Int type"
     }
 
     "have concerned field defined" in {
@@ -129,7 +129,7 @@ class FieldValidationSpec extends PlaySpec {
     }
 
     "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be a short"
+      (validationJson \ "message").as[String] mustBe "Field must be a Short type"
     }
 
     "have concerned field defined" in {
@@ -146,7 +146,7 @@ class FieldValidationSpec extends PlaySpec {
     }
 
     "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be a byte"
+      (validationJson \ "message").as[String] mustBe "Field must be a Byte type"
     }
 
     "have concerned field defined" in {
@@ -163,7 +163,7 @@ class FieldValidationSpec extends PlaySpec {
     }
 
     "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be a long"
+      (validationJson \ "message").as[String] mustBe "Field must be a Long type"
     }
 
     "have concerned field defined" in {
@@ -180,7 +180,7 @@ class FieldValidationSpec extends PlaySpec {
     }
 
     "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be a number"
+      (validationJson \ "message").as[String] mustBe "Field must be a Double or a Float type"
     }
 
     "have concerned field defined" in {

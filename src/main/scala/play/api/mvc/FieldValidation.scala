@@ -42,23 +42,23 @@ object FieldValidation {
   }
 
   case class FieldMustBeInteger(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be an integer"
+    val message = "Field must be an Int type"
   }
 
   case class FieldMustBeShort(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be a short"
+    val message = "Field must be a Short type"
   }
 
   case class FieldMustBeByte(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be a byte"
+    val message = "Field must be a Byte type"
   }
 
   case class FieldMustBeLong(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be a long"
+    val message = "Field must be a Long type"
   }
 
   case class FieldMustBeNumber(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be a number"
+    val message = "Field must be a Double or a Float type"
   }
 
   object FieldValidationError {
