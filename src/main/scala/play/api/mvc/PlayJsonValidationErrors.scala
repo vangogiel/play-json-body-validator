@@ -5,4 +5,5 @@ object PlayJsonValidationErrors {
   val FieldHasInvalidValue = "error.invalidValue"
   val FieldEmpty = "error.required"
   val MultipleResults = "error.path.result.multiple"
+  val ExpectedJsArray = "error.expected.jsarray"
 }
