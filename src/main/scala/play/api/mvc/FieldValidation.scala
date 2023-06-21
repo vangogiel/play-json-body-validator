@@ -12,6 +12,7 @@ import play.api.mvc.PlayJsonValidationErrors.{
   ExpectedLong,
   ExpectedNumber,
   ExpectedShort,
+  ExpectedValidEnumValues,
   FieldEmpty,
   MultipleResults,
   PathMissing
@@ -71,6 +72,10 @@ object FieldValidation {
     val message = "Field must be a BigInteger type"
   }
 
+  case class FieldMustBeValidEnumValue(field: JsonPath) extends FieldValidationError {
+    val message = "Field must be a valid enum value"
+  }
+
   object FieldValidationError {
     implicit val writes: Writes[FieldValidationError] = error =>
       derived.flat
@@ -81,18 +86,19 @@ object FieldValidation {
     def convertFromJsonValidationError(jsPath: JsPath, error: JsonValidationError): FieldValidationError = {
       val path = JsonPath(jsPath)
       error.message match {
-        case PathMissing        => FieldIsMissing(path)
-        case FieldEmpty         => FieldIsEmpty(path)
-        case MultipleResults    => MultipleResultsForField(path)
-        case ExpectedJsArray    => FieldMustBeArray(path)
-        case ExpectedInt        => FieldMustBeInteger(path)
-        case ExpectedShort      => FieldMustBeShort(path)
-        case ExpectedByte       => FieldMustBeByte(path)
-        case ExpectedLong       => FieldMustBeLong(path)
-        case ExpectedNumber     => FieldMustBeNumber(path)
-        case ExpectedBigDecimal => FieldMustBeBigDecimal(path)
-        case ExpectedBigInteger => FieldMustBeBigInteger(path)
-        case _                  => FieldHasInvalidValue(path)
+        case PathMissing             => FieldIsMissing(path)
+        case FieldEmpty              => FieldIsEmpty(path)
+        case MultipleResults         => MultipleResultsForField(path)
+        case ExpectedJsArray         => FieldMustBeArray(path)
+        case ExpectedInt             => FieldMustBeInteger(path)
+        case ExpectedShort           => FieldMustBeShort(path)
+        case ExpectedByte            => FieldMustBeByte(path)
+        case ExpectedLong            => FieldMustBeLong(path)
+        case ExpectedNumber          => FieldMustBeNumber(path)
+        case ExpectedBigDecimal      => FieldMustBeBigDecimal(path)
+        case ExpectedBigInteger      => FieldMustBeBigInteger(path)
+        case ExpectedValidEnumValues => FieldMustBeValidEnumValue(path)
+        case _                       => FieldHasInvalidValue(path)
       }
     }
   }
