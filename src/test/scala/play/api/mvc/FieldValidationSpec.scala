@@ -7,6 +7,7 @@ import play.api.mvc.FieldValidation.{
   FieldIsEmpty,
   FieldIsMissing,
   FieldMustBeArray,
+  FieldMustBeBigDecimal,
   FieldMustBeByte,
   FieldMustBeInteger,
   FieldMustBeLong,
@@ -188,6 +189,23 @@ class FieldValidationSpec extends PlaySpec {
     }
   }
 
+  "A 'field must be a bigdecimal' validation" should {
+    val validation = FieldMustBeBigDecimal(JsonPath(JsPath()))
+    val validationJson = Json.toJson[FieldValidationError](validation)
+
+    "contain the right error code" in {
+      (validationJson \ "errorName").as[String] mustBe "fieldMustBeBigDecimal"
+    }
+
+    "contain the right message" in {
+      (validationJson \ "message").as[String] mustBe "Field must be a BigDecimal type"
+    }
+
+    "have concerned field defined" in {
+      (validationJson \ "field").isDefined
+    }
+  }
+
   "A field validation error" when {
     "receives Play Json validation error" should {
       "correctly match 'path is missing' error" in {
@@ -258,6 +276,13 @@ class FieldValidationSpec extends PlaySpec {
         val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
 
         validationError mustBe a[FieldMustBeNumber]
+      }
+
+      "correctly match 'field must be a bigdecimal' error" in {
+        val error = JsonValidationError(PlayJsonValidationErrors.ExpectedBigDecimal)
+        val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
+
+        validationError mustBe a[FieldMustBeBigDecimal]
       }
     }
   }
