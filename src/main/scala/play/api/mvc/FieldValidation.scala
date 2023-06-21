@@ -4,6 +4,7 @@ import julienrf.json.derived
 import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils
 import play.api.libs.json.{ JsPath, JsString, JsonValidationError, Writes, __ }
 import play.api.mvc.PlayJsonValidationErrors.{
+  ExpectedByte,
   ExpectedInt,
   ExpectedJsArray,
   ExpectedShort,
@@ -46,6 +47,10 @@ object FieldValidation {
     val message = "Field must be a short"
   }
 
+  case class FieldMustBeByte(field: JsonPath) extends FieldValidationError {
+    val message = "Field must be a byte"
+  }
+
   object FieldValidationError {
     implicit val writes: Writes[FieldValidationError] = error =>
       derived.flat
@@ -62,6 +67,7 @@ object FieldValidation {
         case ExpectedJsArray => FieldMustBeArray(path)
         case ExpectedInt     => FieldMustBeInteger(path)
         case ExpectedShort   => FieldMustBeShort(path)
+        case ExpectedByte    => FieldMustBeByte(path)
         case _               => FieldHasInvalidValue(path)
       }
     }
