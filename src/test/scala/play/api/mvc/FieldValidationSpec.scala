@@ -15,6 +15,7 @@ import play.api.mvc.FieldValidation.{
   FieldMustBeInteger,
   FieldMustBeLong,
   FieldMustBeNumber,
+  FieldMustBeObject,
   FieldMustBeShort,
   FieldMustBeString,
   FieldMustBeValidEnumValue,
@@ -296,6 +297,23 @@ class FieldValidationSpec extends PlaySpec {
     }
   }
 
+  "A 'field must be an object' validation" should {
+    val validation = FieldMustBeObject(JsonPath(JsPath()))
+    val validationJson = Json.toJson[FieldValidationError](validation)
+
+    "contain the right error code" in {
+      (validationJson \ "errorName").as[String] mustBe "fieldMustBeObject"
+    }
+
+    "contain the right message" in {
+      (validationJson \ "message").as[String] mustBe "Field must be an object"
+    }
+
+    "have concerned field defined" in {
+      (validationJson \ "field").isDefined
+    }
+  }
+
   "A field validation error" when {
     "receives Play Json validation error" should {
       "correctly match 'path is missing' error" in {
@@ -408,6 +426,13 @@ class FieldValidationSpec extends PlaySpec {
         val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
 
         validationError mustBe a[FieldMustBeString]
+      }
+
+      "correctly match 'field must be an object' error" in {
+        val error = JsonValidationError(PlayJsonValidationErrors.ExpectedObject)
+        val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
+
+        validationError mustBe a[FieldMustBeObject]
       }
     }
   }

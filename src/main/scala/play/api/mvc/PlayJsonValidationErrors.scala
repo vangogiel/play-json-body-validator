@@ -17,4 +17,5 @@ object PlayJsonValidationErrors {
   val ExpectedEnumString = "error.expected.enumstring"
   val ExpectedBoolean = "error.expected.jsboolean"
   val ExpectedString = "error.expected.jsstring"
+  val ExpectedObject = "error.expected.jsobject"
 }
