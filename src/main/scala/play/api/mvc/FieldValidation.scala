@@ -13,6 +13,7 @@ import play.api.mvc.PlayJsonValidationErrors.{
   ExpectedJsArray,
   ExpectedLong,
   ExpectedNumber,
+  ExpectedObject,
   ExpectedShort,
   ExpectedString,
   ExpectedValidEnumValues,
@@ -91,6 +92,10 @@ object FieldValidation {
     val message = "Field must be a String type"
   }
 
+  case class FieldMustBeObject(field: JsonPath) extends FieldValidationError {
+    val message = "Field must be an object"
+  }
+
   object FieldValidationError {
     implicit val writes: Writes[FieldValidationError] = error =>
       derived.flat
@@ -116,6 +121,7 @@ object FieldValidation {
         case ExpectedEnumString      => FieldMustBeEnumString(path)
         case ExpectedBoolean         => FieldMustBeBoolean(path)
         case ExpectedString          => FieldMustBeString(path)
+        case ExpectedObject          => FieldMustBeObject(path)
         case _                       => FieldHasInvalidValue(path)
       }
     }
