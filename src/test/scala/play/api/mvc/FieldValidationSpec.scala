@@ -187,7 +187,7 @@ class FieldValidationSpec extends PlaySpec {
     }
 
     "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be a Double or a Float type"
+      (validationJson \ "message").as[String] mustBe "Field must be a number"
     }
 
     "have concerned field defined" in {

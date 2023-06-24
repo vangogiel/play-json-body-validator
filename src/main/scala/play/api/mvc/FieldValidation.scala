@@ -65,7 +65,7 @@ object FieldValidation {
   }
 
   case class FieldMustBeNumber(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be a Double or a Float type"
+    val message = "Field must be a number"
   }
 
   case class FieldMustBeBigDecimal(field: JsonPath) extends FieldValidationError {
