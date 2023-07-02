@@ -19,6 +19,7 @@ import play.api.mvc.FieldValidation.{
   FieldMustBeObject,
   FieldMustBeShort,
   FieldMustBeString,
+  FieldMustBeUUID,
   FieldMustBeValidEnumValue,
   FieldValidationError,
   MultipleResultsForField
@@ -332,6 +333,23 @@ class FieldValidationSpec extends PlaySpec {
     }
   }
 
+  "A 'field must be UUID' validation" should {
+    val validation = FieldMustBeUUID(JsonPath(JsPath()))
+    val validationJson = Json.toJson[FieldValidationError](validation)
+
+    "contain the right error code" in {
+      (validationJson \ "errorName").as[String] mustBe "fieldMustBeUUID"
+    }
+
+    "contain the right message" in {
+      (validationJson \ "message").as[String] mustBe "Field must be UUID"
+    }
+
+    "have concerned field defined" in {
+      (validationJson \ "field").isDefined
+    }
+  }
+
   "A field validation error" when {
     "receives Play Json validation error" should {
       "correctly match 'path is missing' error" in {
@@ -458,6 +476,13 @@ class FieldValidationSpec extends PlaySpec {
         val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
 
         validationError mustBe a[FieldMustBeCharacter]
+      }
+
+      "correctly match 'field must be UUID' error" in {
+        val error = JsonValidationError(PlayJsonValidationErrors.ExpectedUUID)
+        val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
+
+        validationError mustBe a[FieldMustBeUUID]
       }
     }
   }

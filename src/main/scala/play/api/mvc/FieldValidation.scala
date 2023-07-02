@@ -17,6 +17,7 @@ import play.api.mvc.PlayJsonValidationErrors.{
   ExpectedObject,
   ExpectedShort,
   ExpectedString,
+  ExpectedUUID,
   ExpectedValidEnumValues,
   FieldEmpty,
   MultipleResults,
@@ -101,6 +102,10 @@ object FieldValidation {
     val message = "Field must be a character"
   }
 
+  case class FieldMustBeUUID(field: JsonPath) extends FieldValidationError {
+    val message = "Field must be UUID"
+  }
+
   object FieldValidationError {
     implicit val writes: Writes[FieldValidationError] = error =>
       derived.flat
@@ -128,6 +133,7 @@ object FieldValidation {
         case ExpectedString          => FieldMustBeString(path)
         case ExpectedObject          => FieldMustBeObject(path)
         case ExpectedCharacter       => FieldMustBeCharacter(path)
+        case ExpectedUUID            => FieldMustBeUUID(path)
         case _                       => FieldHasInvalidValue(path)
       }
     }
