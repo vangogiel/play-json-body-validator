@@ -12,6 +12,7 @@ import play.api.mvc.FieldValidation.{
   FieldMustBeBoolean,
   FieldMustBeByte,
   FieldMustBeCharacter,
+  FieldMustBeDate,
   FieldMustBeEnumString,
   FieldMustBeInteger,
   FieldMustBeLong,
@@ -350,6 +351,23 @@ class FieldValidationSpec extends PlaySpec {
     }
   }
 
+  "A 'field must be Date' validation" should {
+    val validation = FieldMustBeDate(JsonPath(JsPath()))
+    val validationJson = Json.toJson[FieldValidationError](validation)
+
+    "contain the right error code" in {
+      (validationJson \ "errorName").as[String] mustBe "fieldMustBeDate"
+    }
+
+    "contain the right message" in {
+      (validationJson \ "message").as[String] mustBe "Field must be Date"
+    }
+
+    "have concerned field defined" in {
+      (validationJson \ "field").isDefined
+    }
+  }
+
   "A field validation error" when {
     "receives Play Json validation error" should {
       "correctly match 'path is missing' error" in {
@@ -483,6 +501,13 @@ class FieldValidationSpec extends PlaySpec {
         val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
 
         validationError mustBe a[FieldMustBeUUID]
+      }
+
+      "correctly match 'field must be Date' error" in {
+        val error = JsonValidationError(PlayJsonValidationErrors.ExpectedDate)
+        val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
+
+        validationError mustBe a[FieldMustBeDate]
       }
     }
   }
