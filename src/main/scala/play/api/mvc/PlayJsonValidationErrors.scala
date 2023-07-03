@@ -21,4 +21,5 @@ object PlayJsonValidationErrors {
   val ExpectedCharacter = "error.invalid.character"
   val ExpectedUUID = "error.expected.uuid"
   val ExpectedDate = "error.expected.date"
+  val ExpectedISOFormatDate = "error.expected.date.isoformat"
 }

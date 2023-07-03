@@ -14,6 +14,7 @@ import play.api.mvc.FieldValidation.{
   FieldMustBeCharacter,
   FieldMustBeDate,
   FieldMustBeEnumString,
+  FieldMustBeISOFormatDate,
   FieldMustBeInteger,
   FieldMustBeLong,
   FieldMustBeNumber,
@@ -368,6 +369,23 @@ class FieldValidationSpec extends PlaySpec {
     }
   }
 
+  "A 'field must be ISO Format Date' validation" should {
+    val validation = FieldMustBeISOFormatDate(JsonPath(JsPath()))
+    val validationJson = Json.toJson[FieldValidationError](validation)
+
+    "contain the right error code" in {
+      (validationJson \ "errorName").as[String] mustBe "fieldMustBeISOFormatDate"
+    }
+
+    "contain the right message" in {
+      (validationJson \ "message").as[String] mustBe "Field must be ISO Date"
+    }
+
+    "have concerned field defined" in {
+      (validationJson \ "field").isDefined
+    }
+  }
+
   "A field validation error" when {
     "receives Play Json validation error" should {
       "correctly match 'path is missing' error" in {
@@ -508,6 +526,13 @@ class FieldValidationSpec extends PlaySpec {
         val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
 
         validationError mustBe a[FieldMustBeDate]
+      }
+
+      "correctly match 'field must be ISO Format Date' error" in {
+        val error = JsonValidationError(PlayJsonValidationErrors.ExpectedISOFormatDate)
+        val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
+
+        validationError mustBe a[FieldMustBeISOFormatDate]
       }
     }
   }
