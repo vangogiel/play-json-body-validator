@@ -1,13 +1,13 @@
 package play.api.mvc
 
 import cats.syntax.either._
-import play.api.libs.json.{ JsValue, Json, Reads }
+import play.api.libs.json.{ JsValue, Json, OWrites, Reads }
 import play.api.mvc.Errors.{ BodyDoesNotMatchSchema, BodyIsEmpty, BodyIsNotJson, GeneralError }
 
 import scala.concurrent.ExecutionContext
 
 class RequestBodyParser(parser: PlayBodyParsers)(implicit val ec: ExecutionContext) extends Results {
-  def parseRequest[A]()(implicit reads: Reads[A]): BodyParser[A] = {
+  def parseRequest[A]()(implicit reads: Reads[A], writes: OWrites[GeneralError]): BodyParser[A] = {
     createBodyParser(
       parser,
       either => {
