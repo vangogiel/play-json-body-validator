@@ -1,8 +1,9 @@
 package play.api.mvc
 
 import julienrf.json.derived.{ DerivedOWrites, NameAdapter, TypeTag, TypeTagOWrites }
-import play.api.libs.json.{ JsNumber, JsObject, JsString, OWrites }
+import play.api.libs.json.{ JsNumber, JsObject, JsString, OWrites, Writes }
 import play.api.mvc.Errors.GeneralError
+import play.api.mvc.FieldValidation.FieldValidationError
 import shapeless.Lazy
 
 object ImplicitWrites {
@@ -12,6 +13,11 @@ object ImplicitWrites {
       JsObject(List("detail" -> JsString(error.detail))) ++
       customOWrites[GeneralError]().writes(error)
   }
+
+  implicit val fieldValidationWrites: Writes[FieldValidationError] = error =>
+    JsObject(List("title" -> JsString(camelToCapitalisedSnakeCase(error.getClass.getSimpleName)))) ++
+      JsObject(List("detail" -> JsString(error.detail))) ++
+      customOWrites[FieldValidationError]().writes(error)
 
   private def customOWrites[A](
       adapter: NameAdapter = NameAdapter.identity

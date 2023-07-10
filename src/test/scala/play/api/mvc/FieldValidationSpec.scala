@@ -14,18 +14,19 @@ import play.api.mvc.FieldValidation.{
   FieldMustBeCharacter,
   FieldMustBeDate,
   FieldMustBeEnumString,
-  FieldMustBeISOFormatDate,
+  FieldMustBeIsoFormatDate,
   FieldMustBeInteger,
   FieldMustBeLong,
   FieldMustBeNumber,
   FieldMustBeObject,
   FieldMustBeShort,
   FieldMustBeString,
-  FieldMustBeUUID,
+  FieldMustBeUuid,
   FieldMustBeValidEnumValue,
   FieldValidationError,
   MultipleResultsForField
 }
+import play.api.mvc.ImplicitWrites.fieldValidationWrites
 
 class FieldValidationSpec extends PlaySpec {
 
@@ -33,12 +34,12 @@ class FieldValidationSpec extends PlaySpec {
     val validation = FieldIsMissing(JsonPath(__ \ "field"))
     val validationJson = Json.toJson[FieldValidationError](validation)
 
-    "contain the type of the error as errorName" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldIsMissing"
+    "contain the type of the error as title" in {
+      (validationJson \ "title").as[String] mustBe "FIELD_IS_MISSING"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field is mandatory"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field is mandatory"
     }
 
     "have concerned field defined" in {
@@ -51,11 +52,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldHasInvalidValue"
+      (validationJson \ "title").as[String] mustBe "FIELD_HAS_INVALID_VALUE"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field has invalid value"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field has invalid value"
     }
 
     "have concerned field defined" in {
@@ -68,11 +69,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldIsEmpty"
+      (validationJson \ "title").as[String] mustBe "FIELD_IS_EMPTY"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field cannot be empty"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field cannot be empty"
     }
 
     "have concerned field defined" in {
@@ -85,11 +86,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "multipleResultsForField"
+      (validationJson \ "title").as[String] mustBe "MULTIPLE_RESULTS_FOR_FIELD"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Multiple results for the given path"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Multiple results for the given path"
     }
 
     "have concerned field defined" in {
@@ -102,11 +103,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeArray"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_ARRAY"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be an array"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be an array"
     }
 
     "have concerned field defined" in {
@@ -119,11 +120,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeInteger"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_INTEGER"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be an Int type"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be an Int type"
     }
 
     "have concerned field defined" in {
@@ -136,11 +137,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeShort"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_SHORT"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be a Short type"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be a Short type"
     }
 
     "have concerned field defined" in {
@@ -153,11 +154,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeByte"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_BYTE"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be a Byte type"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be a Byte type"
     }
 
     "have concerned field defined" in {
@@ -170,11 +171,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeLong"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_LONG"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be a Long type"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be a Long type"
     }
 
     "have concerned field defined" in {
@@ -187,11 +188,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeNumber"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_NUMBER"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be a number"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be a number"
     }
 
     "have concerned field defined" in {
@@ -204,11 +205,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeBigDecimal"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_BIG_DECIMAL"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be a BigDecimal type"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be a BigDecimal type"
     }
 
     "have concerned field defined" in {
@@ -221,11 +222,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeBigInteger"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_BIG_INTEGER"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be a BigInteger type"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be a BigInteger type"
     }
 
     "have concerned field defined" in {
@@ -238,11 +239,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeValidEnumValue"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_VALID_ENUM_VALUE"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be a valid enum value"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be a valid enum value"
     }
 
     "have concerned field defined" in {
@@ -255,11 +256,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeEnumString"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_ENUM_STRING"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be an enum String"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be an enum String"
     }
 
     "have concerned field defined" in {
@@ -272,11 +273,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeBoolean"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_BOOLEAN"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be a Boolean type"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be a Boolean type"
     }
 
     "have concerned field defined" in {
@@ -289,11 +290,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeString"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_STRING"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be a String type"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be a String type"
     }
 
     "have concerned field defined" in {
@@ -306,11 +307,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeObject"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_OBJECT"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be an object"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be an object"
     }
 
     "have concerned field defined" in {
@@ -323,11 +324,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeCharacter"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_CHARACTER"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be a character"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be a character"
     }
 
     "have concerned field defined" in {
@@ -336,15 +337,15 @@ class FieldValidationSpec extends PlaySpec {
   }
 
   "A 'field must be UUID' validation" should {
-    val validation = FieldMustBeUUID(JsonPath(JsPath()))
+    val validation = FieldMustBeUuid(JsonPath(JsPath()))
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeUUID"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_UUID"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be UUID"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be UUID"
     }
 
     "have concerned field defined" in {
@@ -357,11 +358,11 @@ class FieldValidationSpec extends PlaySpec {
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeDate"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_DATE"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be Date"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be Date"
     }
 
     "have concerned field defined" in {
@@ -370,15 +371,15 @@ class FieldValidationSpec extends PlaySpec {
   }
 
   "A 'field must be ISO Format Date' validation" should {
-    val validation = FieldMustBeISOFormatDate(JsonPath(JsPath()))
+    val validation = FieldMustBeIsoFormatDate(JsonPath(JsPath()))
     val validationJson = Json.toJson[FieldValidationError](validation)
 
     "contain the right error code" in {
-      (validationJson \ "errorName").as[String] mustBe "fieldMustBeISOFormatDate"
+      (validationJson \ "title").as[String] mustBe "FIELD_MUST_BE_ISO_FORMAT_DATE"
     }
 
-    "contain the right message" in {
-      (validationJson \ "message").as[String] mustBe "Field must be ISO Date"
+    "contain the right detail" in {
+      (validationJson \ "detail").as[String] mustBe "Field must be ISO Date"
     }
 
     "have concerned field defined" in {
@@ -518,7 +519,7 @@ class FieldValidationSpec extends PlaySpec {
         val error = JsonValidationError(PlayJsonValidationErrors.ExpectedUUID)
         val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
 
-        validationError mustBe a[FieldMustBeUUID]
+        validationError mustBe a[FieldMustBeUuid]
       }
 
       "correctly match 'field must be Date' error" in {
@@ -532,7 +533,7 @@ class FieldValidationSpec extends PlaySpec {
         val error = JsonValidationError(PlayJsonValidationErrors.ExpectedISOFormatDate)
         val validationError = FieldValidationError.convertFromJsonValidationError(JsPath(), error)
 
-        validationError mustBe a[FieldMustBeISOFormatDate]
+        validationError mustBe a[FieldMustBeIsoFormatDate]
       }
     }
   }
