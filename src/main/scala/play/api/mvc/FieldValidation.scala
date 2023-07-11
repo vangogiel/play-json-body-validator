@@ -1,128 +1,99 @@
 package play.api.mvc
 
-import julienrf.json.derived
-import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils
-import play.api.libs.json.{ JsPath, JsString, JsonValidationError, Writes, __ }
-import play.api.mvc.PlayJsonValidationErrors.{
-  ExpectedBigDecimal,
-  ExpectedBigInteger,
-  ExpectedBoolean,
-  ExpectedByte,
-  ExpectedCharacter,
-  ExpectedDate,
-  ExpectedEnumString,
-  ExpectedISOFormatDate,
-  ExpectedInt,
-  ExpectedJsArray,
-  ExpectedLong,
-  ExpectedNumber,
-  ExpectedObject,
-  ExpectedShort,
-  ExpectedString,
-  ExpectedUUID,
-  ExpectedValidEnumValues,
-  FieldEmpty,
-  MultipleResults,
-  PathMissing
-}
+import play.api.libs.json.{ JsPath, JsonValidationError }
+import play.api.mvc.PlayJsonValidationErrors._
 
 object FieldValidation {
   sealed trait FieldValidationError {
-    def message: String
+    def detail: String
     def field: JsonPath
   }
 
   case class FieldIsMissing(field: JsonPath) extends FieldValidationError {
-    val message = "Field is mandatory"
+    val detail = "Field is mandatory"
   }
 
   case class FieldHasInvalidValue(field: JsonPath) extends FieldValidationError {
-    val message = "Field has invalid value"
+    val detail = "Field has invalid value"
   }
 
   case class FieldIsEmpty(field: JsonPath) extends FieldValidationError {
-    val message = "Field cannot be empty"
+    val detail = "Field cannot be empty"
   }
 
   case class MultipleResultsForField(field: JsonPath) extends FieldValidationError {
-    val message = "Multiple results for the given path"
+    val detail = "Multiple results for the given path"
   }
 
   case class FieldMustBeArray(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be an array"
+    val detail = "Field must be an array"
   }
 
   case class FieldMustBeInteger(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be an Int type"
+    val detail = "Field must be an Int type"
   }
 
   case class FieldMustBeShort(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be a Short type"
+    val detail = "Field must be a Short type"
   }
 
   case class FieldMustBeByte(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be a Byte type"
+    val detail = "Field must be a Byte type"
   }
 
   case class FieldMustBeLong(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be a Long type"
+    val detail = "Field must be a Long type"
   }
 
   case class FieldMustBeNumber(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be a number"
+    val detail = "Field must be a number"
   }
 
   case class FieldMustBeBigDecimal(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be a BigDecimal type"
+    val detail = "Field must be a BigDecimal type"
   }
 
   case class FieldMustBeBigInteger(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be a BigInteger type"
+    val detail = "Field must be a BigInteger type"
   }
 
   case class FieldMustBeValidEnumValue(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be a valid enum value"
+    val detail = "Field must be a valid enum value"
   }
 
   case class FieldMustBeEnumString(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be an enum String"
+    val detail = "Field must be an enum String"
   }
 
   case class FieldMustBeBoolean(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be a Boolean type"
+    val detail = "Field must be a Boolean type"
   }
 
   case class FieldMustBeString(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be a String type"
+    val detail = "Field must be a String type"
   }
 
   case class FieldMustBeObject(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be an object"
+    val detail = "Field must be an object"
   }
 
   case class FieldMustBeCharacter(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be a character"
+    val detail = "Field must be a character"
   }
 
-  case class FieldMustBeUUID(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be UUID"
+  case class FieldMustBeUuid(field: JsonPath) extends FieldValidationError {
+    val detail = "Field must be UUID"
   }
 
   case class FieldMustBeDate(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be Date"
+    val detail = "Field must be Date"
   }
 
-  case class FieldMustBeISOFormatDate(field: JsonPath) extends FieldValidationError {
-    val message = "Field must be ISO Date"
+  case class FieldMustBeIsoFormatDate(field: JsonPath) extends FieldValidationError {
+    val detail = "Field must be ISO Date"
   }
 
   object FieldValidationError {
-    implicit val writes: Writes[FieldValidationError] = error =>
-      derived.flat
-        .owrites[FieldValidationError]((__ \ "errorName").write[String].contramap[String](StringUtils.uncapitalize))
-        .writes(error)
-        .+("message" -> JsString(error.message))
-
     def convertFromJsonValidationError(jsPath: JsPath, error: JsonValidationError): FieldValidationError = {
       val path = JsonPath(jsPath)
       error.message match {
@@ -143,9 +114,9 @@ object FieldValidation {
         case ExpectedString          => FieldMustBeString(path)
         case ExpectedObject          => FieldMustBeObject(path)
         case ExpectedCharacter       => FieldMustBeCharacter(path)
-        case ExpectedUUID            => FieldMustBeUUID(path)
+        case ExpectedUUID            => FieldMustBeUuid(path)
         case ExpectedDate            => FieldMustBeDate(path)
-        case ExpectedISOFormatDate   => FieldMustBeISOFormatDate(path)
+        case ExpectedISOFormatDate   => FieldMustBeIsoFormatDate(path)
         case _                       => FieldHasInvalidValue(path)
       }
     }

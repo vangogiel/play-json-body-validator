@@ -7,6 +7,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatestplus.play.PlaySpec
 import play.api.http.Status.BAD_REQUEST
 import play.api.libs.json.{ JsValue, Json, OFormat }
+import play.api.mvc.ImplicitWrites.generalErrorWrites
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{ contentAsJson, defaultAwaitTimeout, status, stubPlayBodyParsers }
 
@@ -55,8 +56,9 @@ class TestRequestBodyParser extends PlaySpec with Eventually {
       }
 
       "return an error stating that the body is empty" in {
-        (contentAsJson(outcome) \ "errorName").as[String] mustBe "bodyIsEmpty"
-        (contentAsJson(outcome) \ "message").as[String] mustBe "You must provide body in your request"
+        (contentAsJson(outcome) \ "status").as[Int] mustBe 400
+        (contentAsJson(outcome) \ "title").as[String] mustBe "BODY_IS_EMPTY"
+        (contentAsJson(outcome) \ "detail").as[String] mustBe "You must provide body in your request"
       }
     }
 
@@ -72,8 +74,9 @@ class TestRequestBodyParser extends PlaySpec with Eventually {
       }
 
       "return an error stating that the body does not match schema" in {
-        (contentAsJson(outcome) \ "errorName").as[String] mustBe "bodyDoesNotMatchSchema"
-        (contentAsJson(outcome) \ "message").as[String] mustBe "The message body does not match JSON schema"
+        (contentAsJson(outcome) \ "status").as[Int] mustBe 400
+        (contentAsJson(outcome) \ "title").as[String] mustBe "BODY_DOES_NOT_MATCH_SCHEMA"
+        (contentAsJson(outcome) \ "detail").as[String] mustBe "The message body does not match JSON schema"
       }
     }
 
@@ -89,8 +92,9 @@ class TestRequestBodyParser extends PlaySpec with Eventually {
       }
 
       "return an error stating that the body is not Json" in {
-        (contentAsJson(outcome) \ "errorName").as[String] mustBe "bodyIsNotJson"
-        (contentAsJson(outcome) \ "message").as[String] mustBe "You must provide valid json content with your request"
+        (contentAsJson(outcome) \ "status").as[Int] mustBe 400
+        (contentAsJson(outcome) \ "title").as[String] mustBe "BODY_IS_NOT_JSON"
+        (contentAsJson(outcome) \ "detail").as[String] mustBe "You must provide valid json content with your request"
       }
     }
   }
