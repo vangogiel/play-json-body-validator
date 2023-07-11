@@ -11,7 +11,7 @@ class RequestBodyParser(parser: PlayBodyParsers)(implicit val ec: ExecutionConte
     createBodyParser(
       parser,
       either => {
-        val result: Either[GeneralError, A] = either match {
+        val result: Either[GeneralError, A] = either.leftMap(header => header.hasBody) match {
           case Right(json) =>
             json
               .validate[A]
@@ -27,12 +27,12 @@ class RequestBodyParser(parser: PlayBodyParsers)(implicit val ec: ExecutionConte
 
   private def createBodyParser[A](
       parser: PlayBodyParsers,
-      f: Either[Boolean, JsValue] => Either[Result, A]
+      f: Either[RequestHeader, JsValue] => Either[Result, A]
   ): BodyParser[A] = {
     BodyParser(header =>
       parser.tolerantJson
         .apply(header)
-        .map(either => f(either.leftMap(_ => header.hasBody)))
+        .map(either => f(either.leftMap(_ => header)))
     )
   }
 }
